@@ -1,0 +1,18 @@
+# Data files
+*.csv
+*.json
+*.parquet
+
+# Logs
+logs/
+wandb/
+.ipynb_checkpoints/
+
+# Python/IDE
+__pycache__/
+*.pyc
+.env
+.venv/
+.idea/
+.vscode/
+

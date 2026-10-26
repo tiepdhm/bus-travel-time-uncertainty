@@ -1,0 +1,29 @@
+# Core Deep Learning & Machine Learning (tương thích env ai_workspace local)
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+
+# Data Processing & Storage
+pandas==2.3.3
+pyarrow==25.0.0
+
+# Visualization & EDA
+matplotlib==3.10.9
+seaborn==0.13.2
+
+# GIS & Trajectory Plotting (cho plot_trajectory.ipynb)
+geopandas==1.1.4
+shapely==2.1.2
+contextily==1.7.1
+polyline==2.0.4
+requests==2.34.2
+pyproj==3.7.1
+
+# Experiment Tracking & Utils
+python-dotenv==1.2.2
+wandb==0.28.1
+tqdm==4.69.1
+PyYAML==6.0.3
