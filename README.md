@@ -1,4 +1,4 @@
-# Bus Travel Time Prediction Benchmark (Rotterdam)
+# Bus Link Travel Time Prediction with Uncertainty Quantification
 
 Mã nguồn thực nghiệm Đồ án tốt nghiệp Thạc sĩ HK253: 
 
