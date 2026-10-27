@@ -8,7 +8,7 @@ Mã nguồn thực nghiệm Đồ án tốt nghiệp Thạc sĩ HK253:
 
 ## 📁 Cấu trúc Notebooks
 
-| File Notebook | Mô tả & Chức năng |
+| File Notebook | Mô tả |
 | --- | --- |
 | [`notebooks/plot_trajectory.ipynb`](https://www.google.com/search?q=notebooks/plot_trajectory.ipynb) | Trực quan hóa tuyến đường sử dụng trong dataset và các trạm dừng trên bản đồ thực tế (sử dụng OSRM API + Esri tiles). |
 | [`notebooks/EDA_Benchmark_Dataset_Statistics.ipynb`](https://www.google.com/search?q=notebooks/EDA_Benchmark_Dataset_Statistics.ipynb) | Phân tích thống kê dữ liệu (EDA). |
