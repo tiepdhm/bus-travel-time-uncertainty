@@ -38,62 +38,6 @@ def compute_picp(
     return float(np.mean(covered))
 
 
-def compute_pinaw(
-    q_low: Union[np.ndarray, torch.Tensor],
-    q_high: Union[np.ndarray, torch.Tensor],
-) -> float:
-    """Compute Prediction Interval Normalized / Mean Average Width (PINAW / Sharpness).
-
-    PINAW = average interval width (q_high - q_low).
-    """
-    if isinstance(q_low, torch.Tensor):
-        q_low = q_low.detach().cpu().numpy()
-    if isinstance(q_high, torch.Tensor):
-        q_high = q_high.detach().cpu().numpy()
-
-    valid = ~np.isnan(q_low) & ~np.isnan(q_high)
-    if not np.any(valid):
-        return float("nan")
-
-    width = q_high[valid] - q_low[valid]
-    return float(np.mean(width))
-
-
-def compute_winkler_score(
-    y_true: Union[np.ndarray, torch.Tensor],
-    q_low: Union[np.ndarray, torch.Tensor],
-    q_high: Union[np.ndarray, torch.Tensor],
-    alpha: float = 0.10,
-) -> float:
-    """Compute Winkler Score (Interval Loss) for significance level alpha.
-
-    W_i = (q_high - q_low)
-          + (2 / alpha) * (q_low - y) * I(y < q_low)
-          + (2 / alpha) * (y - q_high) * I(y > q_high)
-    """
-    if isinstance(y_true, torch.Tensor):
-        y_true = y_true.detach().cpu().numpy()
-    if isinstance(q_low, torch.Tensor):
-        q_low = q_low.detach().cpu().numpy()
-    if isinstance(q_high, torch.Tensor):
-        q_high = q_high.detach().cpu().numpy()
-
-    valid = ~np.isnan(y_true) & ~np.isnan(q_low) & ~np.isnan(q_high)
-    if not np.any(valid):
-        return float("nan")
-
-    y_val = y_true[valid]
-    low_val = q_low[valid]
-    high_val = q_high[valid]
-
-    width = high_val - low_val
-    penalty_low = np.maximum(0.0, low_val - y_val) * (2.0 / alpha)
-    penalty_high = np.maximum(0.0, y_val - high_val) * (2.0 / alpha)
-
-    score = width + penalty_low + penalty_high
-    return float(np.mean(score))
-
-
 class ConformalQuantileCalibrator:
     """Conformal Quantile Regression (CQR) Calibrator.
 
@@ -306,13 +250,11 @@ class ConformalQuantileCalibrator:
         y_test: Union[np.ndarray, torch.Tensor],
         q_test_calibrated: Union[np.ndarray, torch.Tensor],
     ) -> Dict[str, Union[float, Dict[int, float]]]:
-        """Evaluate coverage, width, and Winkler score on test predictions.
+        """Evaluate coverage on test predictions.
 
         Returns:
             Dictionary containing overall and per-horizon metrics:
             - 'picp': Empirical coverage rate
-            - 'pinaw': Mean interval width
-            - 'winkler_score': Winkler interval loss score
             - 'per_horizon': Dict of metrics per horizon index if multi-horizon
         """
         y_np, _ = self._to_numpy(y_test)
@@ -322,13 +264,9 @@ class ConformalQuantileCalibrator:
         q_high = q_np[..., self.high_idx]
 
         picp_overall = compute_picp(y_np, q_low, q_high)
-        pinaw_overall = compute_pinaw(q_low, q_high)
-        winkler_overall = compute_winkler_score(y_np, q_low, q_high, alpha=self.alpha)
 
         results: Dict[str, Union[float, Dict[int, float]]] = {
             "picp": picp_overall,
-            "pinaw": pinaw_overall,
-            "winkler_score": winkler_overall,
             "alpha": self.alpha,
             "nominal_coverage": self.nominal_coverage,
         }
@@ -343,8 +281,6 @@ class ConformalQuantileCalibrator:
                 q_high_h = q_high[:, h, ...]
                 per_h_dict[h] = {
                     "picp": compute_picp(y_h, q_low_h, q_high_h),
-                    "pinaw": compute_pinaw(q_low_h, q_high_h),
-                    "winkler_score": compute_winkler_score(y_h, q_low_h, q_high_h, alpha=self.alpha),
                 }
             results["per_horizon"] = per_h_dict
 
